@@ -1,6 +1,6 @@
 <template>
   <div class="day" :class="'day-' + day">
-    <div class="date">{{day}}</div>
+    <div class="date" :class="todayClass">{{day}}</div>
   </div>
 </template>
 
@@ -9,6 +9,11 @@ export default {
   name: "Day",
   props: {
     day: Number
+  },
+  computed: {
+    todayClass() {
+      return this.day === new Date().getDate() ? 'today' : ''
+    }
   }
 };
 </script>
@@ -36,5 +41,10 @@ export default {
   .date {
     font-family: "Avenir", helvetica, sans-serif;
     font-size: 2.1vw;
+    line-height: 2.1vw;
+
+    &.today {
+      font-weight: 700;
+    }
   }
 </style>
