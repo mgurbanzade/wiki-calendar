@@ -1,7 +1,6 @@
 <template>
-  <div class="day" :class="`day-${day}`"
-                   @click="select">
-    <div class="date" :class="todayClass">{{day}}</div>
+  <div class="day" :class="{today: todayClass, selected: isSelected}" @click="select">
+    <div class="date">{{day}}</div>
   </div>
 </template>
 
@@ -9,26 +8,29 @@
 
 export default {
   name: "Day",
+  props: {
+    day: Number,
+    currentElement: Number
+  },
   data() {
     return {
-      selected: false,
-      class: ''
+
     }
-  },
-  props: {
-    day: Number
   },
   computed: {
     todayClass() {
-      return this.day === new Date().getDate() ? 'today' : ''
+      return this.day === new Date().getDate()
     },
     photoUrl() {
       return require('../assets/img-' + this.day + '.jpg');
+    },
+    isSelected() {
+      return this.currentElement === this.day
     }
   },
   methods: {
     select(event) {
-      return this.$emit('daySelected', this.photoUrl)
+      return this.$emit('daySelected', this.photoUrl, this.day)
     }
   }
 };
@@ -44,16 +46,37 @@ export default {
     border: 1px solid #eee;
     box-sizing: border-box;
     padding: 1.2vw;
-    transition: transform 0.5s;
     color: #fff;
-    background-position: center;
-    background-size: cover;
-    background-clip: padding-box;
+    background-image: linear-gradient(-270deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.2));
 
     &:hover {
-      transform: scale(1.05);
       cursor: pointer;
       z-index: 1;
+      background-image: linear-gradient(-270deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.3));
+      background-size: 400%;
+      animation: bab 3s ease infinite;
+    }
+
+    &.today {
+      font-weight: 700;
+      color: lighten(#000, 40%);
+      background-color: rgba(255, 255, 255, 0.7);
+    }
+
+    &.selected {
+      position: relative;
+
+      &::after {
+        content: '';
+        display: block;
+        width: 1vw;
+        height: 1vw;
+        border-radius: 50%;
+        background-color: #fff;
+        position: absolute;
+        right: 10px;
+        bottom: 10px;
+      }
     }
   }
 
@@ -61,11 +84,11 @@ export default {
     font-family: "Avenir", helvetica, sans-serif;
     font-size: 2.1vw;
     line-height: 2.1vw;
-
-    &.today {
-      font-weight: 700;
-    }
   }
 
-  // :style="{ backgroundImage: `url(${photoUrl})` }"
+  @keyframes bab {
+    0% { background-position: 0% 0% }
+    50% { background-position: 100% 100% }
+    100% { background-position: 0% 0% }
+  }
 </style>
