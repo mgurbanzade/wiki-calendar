@@ -45,5 +45,8 @@
     padding: 1vw;
     display: flex;
     justify-content: space-between;
+    margin-top: -9.5vw;
+    z-index: 1;
+    position: relative;
   }
 </style>
