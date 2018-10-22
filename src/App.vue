@@ -106,7 +106,6 @@ body {
 .facts {
   color: #fff;
   margin: 0 calc(0.4vw + 1px);
-  height: 2vw;
   font-size: 1.2vw;
   font-family: "Avenir", sans-serif;
   background-color: rgba(0, 0, 0, 0.5);
@@ -122,9 +121,6 @@ body {
 .fact {
   line-height: 2vw;
   margin: auto;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .slide-enter {
