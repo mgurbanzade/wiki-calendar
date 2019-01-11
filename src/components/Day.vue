@@ -18,16 +18,13 @@ export default {
     todayClass() {
       return this.day === new Date().getDate();
     },
-    photoUrl() {
-      return require("../assets/img-" + this.day + ".jpg");
-    },
     isSelected() {
       return this.currentElement === this.day;
     }
   },
   methods: {
     select() {
-      return this.$emit("daySelected", this.photoUrl, this.day);
+      return this.$emit("daySelected", this.day);
     }
   }
 };

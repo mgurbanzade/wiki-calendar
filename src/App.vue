@@ -1,11 +1,11 @@
 <template>
-  <div id="app" :style="{ backgroundImage: bgPhoto }">
+  <div id="app" :style="{ backgroundImage: bg }">
     <div class="facts">
-      <transition name="slide" mode="out-in">
+      <!-- <transition name="slide" mode="out-in"> -->
         <div class="fact" :key="facts">{{ facts }}</div>
-      </transition>
+      <!-- </transition> -->
     </div>
-    <div class="days" :style="{ pointerEvents: pointerEvents }">
+    <div class="days">
       <day v-for="(day, index) in daysCount"
            :day="day"
            :key="index"
@@ -25,8 +25,7 @@ export default {
   name: "app",
   data() {
     return {
-      bgPhoto: "",
-      pointerEvents: "auto",
+      bg: "",
       facts: "",
       currentElement: new Date().getDate()
     };
@@ -38,56 +37,43 @@ export default {
     }
   },
   methods: {
-    handleSelectedDay(url, day) {
+    handleSelectedDay(day) {
       this.currentElement = day;
-      this.pointerEvents = "none";
-      this.bgPhoto = `url(${url})`;
-
-      setTimeout(() => {
-        this.pointerEvents = "auto";
-      }, 1500);
-
       this.appendFact(day);
+      this.bg = this.generateGradient()
     },
     appendFact(day) {
       let month = new Date().getMonth() + 1;
       axios
         .get(`http://numbersapi.com/${month}/${day}/date`)
         .then(response => (this.facts = response.data));
+    },
+    random() {
+      return Math.floor(Math.random() * 255);
+    },
+    generateGradient() {
+      let from = `rgb(${this.random()}, ${this.random()}, ${this.random()})`;
+      let to = `rgb(${this.random()}, ${this.random()}, ${this.random()})`;
+
+      return `linear-gradient(to right, ${from}, ${to})`;
     }
   },
   components: { Day, CurrentTime },
   beforeMount() {
-    let url = require("./assets/img-" + new Date().getDate() + ".jpg");
-    this.bgPhoto = `url(${url})`;
     this.appendFact(new Date().getDate());
-  }
+    this.bg = this.generateGradient();
+  },
 };
 </script>
 
 <style lang="scss">
 body {
   margin: 0;
-
-  $urls: url("./assets/img-1.jpg");
-
-  @for $i from 1 through 31 {
-    $urls: $urls + ", " + url("./assets/img-#{$i}.jpg");
-
-    @if $i == 31 {
-      $urls: $urls + ";";
-    }
-  }
-
-  &::before {
-    content: "";
-    background-image: $urls;
-  }
 }
 
 #app {
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -124,15 +110,15 @@ body {
 }
 
 .slide-enter {
-  transform: translateX(100%);
+  opacity: 1;
 }
 
 .slide-enter-active {
-  transition: transform 0.5s;
+  transition: opacity 0.5s;
 }
 
 .slide-leave-active {
-  transition: transform 0.5s;
-  transform: translateX(-100%);
+  transition: opacity 0.5s;
+  opacity: 0;
 }
 </style>
