@@ -27,6 +27,7 @@ export default {
     return {
       bg: "",
       facts: "",
+      interval: Object,
       currentElement: new Date().getDate()
     };
   },
@@ -39,18 +40,29 @@ export default {
   methods: {
     handleSelectedDay(day) {
       this.currentElement = day;
-      this.appendFact(day);
+      this.getFacts(day);
       this.bg = this.generateGradient();
     },
-    appendFact(day) {
+    getFacts(day) {
       let month = new Date().getMonth() + 1;
       axios
-        .get(`https://history.muffinlabs.com/date/${month}/${day}`)
+        .get(
+          `https://cors.io/?https://history.muffinlabs.com/date/${month}/${day}`
+        )
         .then(response => {
           let events = response.data.data.Events;
           events = events.map(event => event.text);
-          this.facts = events[Math.floor(Math.random() * events.length - 1)];
+          this.appendFact(events);
         });
+    },
+    appendFact(events) {
+      let index = 0;
+      this.facts = events[index];
+
+      this.interval = setInterval(() => {
+        index = index >= events.length ? 0 : index + 1;
+        this.facts = events[index];
+      }, 7000);
     },
     random() {
       return Math.floor(Math.random() * 255);
@@ -62,9 +74,17 @@ export default {
       return `linear-gradient(to right, ${from}, ${to})`;
     }
   },
-  components: { Day, CurrentTime },
+  watch: {
+    currentElement() {
+      window.clearInterval(this.interval);
+    }
+  },
+  components: {
+    Day,
+    CurrentTime
+  },
   beforeMount() {
-    this.appendFact(new Date().getDate());
+    this.getFacts(new Date().getDate());
     this.bg = this.generateGradient();
   }
 };
@@ -94,7 +114,8 @@ body {
 }
 
 .facts {
-  height: 2vw;
+  height: max-content;
+  min-height: 2vw;
   color: #fff;
   margin: 0 calc(0.4vw + 1px);
   font-size: 1.2vw;
@@ -107,10 +128,12 @@ body {
   padding: 0 0.5vw;
   overflow: hidden;
   cursor: pointer;
+  transition: height 0.5s;
 }
 
 .fact {
   line-height: 2vw;
+  transition: height 0.5s;
   margin: auto;
 }
 
