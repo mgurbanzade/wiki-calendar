@@ -1,9 +1,9 @@
 <template>
   <div id="app" :style="{ backgroundImage: bg }">
     <div class="facts">
-      <!-- <transition name="slide" mode="out-in"> -->
+      <transition name="slide" mode="out-in">
         <div class="fact" :key="facts">{{ facts }}</div>
-      <!-- </transition> -->
+      </transition>
     </div>
     <div class="days">
       <day v-for="(day, index) in daysCount"
@@ -73,7 +73,7 @@ body {
 
 #app {
   width: 100%;
-  height: 100%;
+  height: 100vh;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
