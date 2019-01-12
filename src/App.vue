@@ -91,13 +91,17 @@ export default {
 </script>
 
 <style lang="scss">
+html,
 body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
   margin: 0;
 }
 
 #app {
   width: 100%;
-  height: 100vh;
+  height: 100%;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
