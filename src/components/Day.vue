@@ -1,5 +1,5 @@
 <template>
-  <div class="day" :class="{today: todayClass, selected: isSelected}" @click="select">
+  <div class="day" :class="{today: todayClass, selected: isSelected, last: isLastDay}" @click="select">
     <div class="date">{{day}}</div>
   </div>
 </template>
@@ -9,7 +9,8 @@ export default {
   name: "Day",
   props: {
     day: Number,
-    currentElement: Number
+    currentElement: Number,
+    isLastDay: Boolean
   },
   data() {
     return {};
@@ -35,12 +36,16 @@ export default {
 }
 
 .day {
-  width: calc(100vw / 7 - 2px);
-  height: calc(49vw / 5 - 2px);
-  border: 1px solid #eee;
+  width: calc(100% / 7);
+  flex-basis: calc(100% / 7);
+  height: calc(42vw / 5);
+  border-left: 1px solid #eee;
+  border-bottom: 1px solid #eee;
   box-sizing: border-box;
   padding: 1.2vw;
   color: #fff;
+  background-size: 101%;
+  z-index: 10;
   background-image: linear-gradient(
     -270deg,
     rgba(255, 255, 255, 0.05),
@@ -79,6 +84,17 @@ export default {
       right: 10px;
       bottom: 10px;
     }
+  }
+
+  &:nth-of-type(7),
+  &:nth-of-type(14),
+  &:nth-of-type(21),
+  &:nth-of-type(28) {
+    border-right: 1px solid #eee;
+  }
+
+  &.last {
+    box-shadow: 1px 0 0 0 #eee;
   }
 }
 

@@ -10,6 +10,7 @@
            :day="day"
            :key="index"
            :currentElement="currentElement"
+           :isLastDay="index + 1 === daysCount"
            @daySelected="handleSelectedDay"/>
     </div>
     <current-time></current-time>
@@ -26,9 +27,12 @@ export default {
   data() {
     return {
       bg: "",
-      facts: "",
+      facts: "Looking for facts...",
       interval: Object,
-      currentElement: new Date().getDate()
+      receivedEvents: Array,
+      currentEventIndex: 0,
+      currentElement: new Date().getDate(),
+      requestFailed: false
     };
   },
   computed: {
@@ -45,23 +49,30 @@ export default {
     },
     getFacts(day) {
       let month = new Date().getMonth() + 1;
+      this.requestFailed = false;
       axios
         .get(
-          `https://cors.io/?https://history.muffinlabs.com/date/${month}/${day}`
+          `https://cors.io/?https://history.muffinlabs.com/date/${month}/${day}?.json`
         )
         .then(response => {
           let events = response.data.data.Events;
-          events = events.map(event => event.text);
-          this.appendFact(events);
+          this.receivedEvents = events.map(event => event.text);
+        })
+        .catch(() => {
+          this.facts = "The server does not want to share its data :(";
+          this.requestFailed = true;
         });
     },
-    appendFact(events) {
-      let index = 0;
-      this.facts = events[index];
+    appendFact() {
+      this.facts =
+        this.receivedEvents[this.currentEventIndex] || "Looking for facts...";
 
-      this.interval = setInterval(() => {
-        index = index >= events.length ? 0 : index + 1;
-        this.facts = events[index];
+      setInterval(() => {
+        this.facts =
+          this.receivedEvents[this.currentEventIndex] || "Looking for facts...";
+        if (this.currentEventIndex >= this.receivedEvents.length)
+          this.currentEventIndex = 0;
+        else this.currentEventIndex += 1;
       }, 7000);
     },
     random() {
@@ -75,8 +86,10 @@ export default {
     }
   },
   watch: {
-    currentElement() {
-      window.clearInterval(this.interval);
+    receivedEvents() {
+      this.currentEventIndex = 0;
+
+      if (!this.requestFailed) this.facts = "Looking for facts...";
     }
   },
   components: {
@@ -84,8 +97,11 @@ export default {
     CurrentTime
   },
   beforeMount() {
-    this.getFacts(new Date().getDate());
     this.bg = this.generateGradient();
+    this.getFacts(new Date().getDate());
+  },
+  mounted() {
+    this.appendFact();
   }
 };
 </script>
@@ -106,11 +122,12 @@ body {
   background-position: center;
   background-repeat: no-repeat;
   transition: background-image 0.5s;
-  padding-top: 0.5vw;
+  padding: 0.5vw;
   box-sizing: border-box;
 }
 
 .days {
+  width: 100%;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -121,7 +138,6 @@ body {
   height: max-content;
   min-height: 2vw;
   color: #fff;
-  margin: 0 calc(0.4vw + 1px);
   font-size: 1.2vw;
   font-family: "Avenir", sans-serif;
   background-color: rgba(0, 0, 0, 0.5);
@@ -133,6 +149,7 @@ body {
   overflow: hidden;
   cursor: pointer;
   transition: height 0.5s;
+  border-bottom: 1px solid #eee;
 }
 
 .fact {
