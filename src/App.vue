@@ -40,7 +40,7 @@ export default {
     handleSelectedDay(day) {
       this.currentElement = day;
       this.appendFact(day);
-      this.bg = this.generateGradient()
+      this.bg = this.generateGradient();
     },
     appendFact(day) {
       let month = new Date().getMonth() + 1;
@@ -62,7 +62,7 @@ export default {
   beforeMount() {
     this.appendFact(new Date().getDate());
     this.bg = this.generateGradient();
-  },
+  }
 };
 </script>
 
