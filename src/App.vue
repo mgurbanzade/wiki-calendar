@@ -1,7 +1,7 @@
 <template>
   <div id="app" :style="{ backgroundImage: bg }">
     <div class="facts">
-      <transition name="slide" mode="out-in">
+      <transition name="fade" mode="out-in">
         <div class="fact" :key="facts">{{ facts }}</div>
       </transition>
     </div>
@@ -45,8 +45,12 @@ export default {
     appendFact(day) {
       let month = new Date().getMonth() + 1;
       axios
-        .get(`http://numbersapi.com/${month}/${day}/date`)
-        .then(response => (this.facts = response.data));
+        .get(`https://history.muffinlabs.com/date/${month}/${day}`)
+        .then(response => {
+          let events = response.data.data.Events;
+          events = events.map(event => event.text);
+          this.facts = events[Math.floor(Math.random() * events.length - 1)];
+        });
     },
     random() {
       return Math.floor(Math.random() * 255);
@@ -77,7 +81,7 @@ body {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  transition: background-image 1.5s ease-out;
+  transition: background-image 0.5s;
   padding-top: 0.5vw;
   box-sizing: border-box;
 }
@@ -90,6 +94,7 @@ body {
 }
 
 .facts {
+  height: 2vw;
   color: #fff;
   margin: 0 calc(0.4vw + 1px);
   font-size: 1.2vw;
@@ -109,16 +114,11 @@ body {
   margin: auto;
 }
 
-.slide-enter {
-  opacity: 1;
-}
-
-.slide-enter-active {
+.fade-enter-active,
+.fade-leave-active {
   transition: opacity 0.5s;
 }
-
-.slide-leave-active {
-  transition: opacity 0.5s;
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
 }
 </style>
