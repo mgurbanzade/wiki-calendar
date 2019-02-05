@@ -1,5 +1,5 @@
 <template>
-  <div class="date-row">
+  <div class="date-row" :class="{february: new Date().getMonth() === 1}">
     <div>{{ showDate }}</div>
     <div>{{ showTime }}</div>
   </div>
@@ -48,5 +48,9 @@ export default {
   margin-top: -7.5vw;
   z-index: 1;
   position: relative;
+
+  &.february {
+    margin-top: 0;
+  }
 }
 </style>
